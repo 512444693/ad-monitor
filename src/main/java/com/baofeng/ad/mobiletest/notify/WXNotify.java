@@ -2,15 +2,16 @@ package com.baofeng.ad.mobiletest.notify;
 
 import com.google.gson.Gson;
 import com.zm.frame.utils.HttpsClientUtils;
-import jdk.internal.util.xml.impl.Input;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 import static com.zm.frame.log.Log.log;
@@ -177,7 +178,51 @@ public class WXNotify implements Notify {
         return sb.toString();
     }
 
+    /**
+     * 指定屏幕区域截图，返回截图的BufferedImage对象
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @return
+     */
+    private BufferedImage getScreenShot(int x, int y, int width, int height) {
+        BufferedImage bfImage = null;
+        try {
+            Robot robot = new Robot();
+            bfImage = robot.createScreenCapture(new Rectangle(x, y, width, height));
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        return bfImage;
+    }
+
+    /**
+     * 指定屏幕区域截图，保存到指定目录
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param savePath - 文件保存路径
+     * @param fileName - 文件保存名称
+     * @param format - 文件格式
+     */
+    private void screenShotAsFile(int x, int y, int width, int height, String savePath, String fileName, String format) {
+        try {
+            Robot robot = new Robot();
+            BufferedImage bfImage = robot.createScreenCapture(new Rectangle(x, y, width, height));
+            File path = new File(savePath);
+            File file = new File(path, fileName+ "." + format);
+            ImageIO.write(bfImage, format, file);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendScreenShot() {
+        screenShotAsFile(0, 0, 1440, 900, ".", "screen_shot", "jpg");
         String mediaId = uploadImage();
         if (!mediaId.equals("")) {
             sendImage(mediaId);

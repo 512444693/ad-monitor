@@ -22,4 +22,5 @@ public class D extends Definition {
     public static final int MSG_TYPE_CAPTURE_STOP = 2004;
     public static final int MSG_TYPE_DAILY_REPORT = 2005;
     public static final int MSG_TYPE_EXIT = 2006;
+    public static final int MSG_TYPE_SEND_SCREEN_SHOT = 2007;
 }

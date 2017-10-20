@@ -73,9 +73,9 @@ public class ReportMsgMgr {
     }
 
     //临时发送线程消息, 不可回复
-    private void sendToNotifyThread(NotifyMsgBody msgBody) {
+    private void sendToNotifyThread(NotifyMsgBody msgBody, int msgType) {
         ThreadMsg msg = new ThreadMsg(-1, -1, -1,
-                D.THREAD_TYPE_NOTIFY, -1, -1, D.MSG_TYPE_NOTIFY, msgBody);
+                D.THREAD_TYPE_NOTIFY, -1, -1, msgType, msgBody);
         server.sendThreadMsgTo(msg);
     }
 
@@ -163,6 +163,15 @@ public class ReportMsgMgr {
             notifyData.addContent(String.format(Template.MAIL_B, location, "一次case中没有满足过滤条件的报数", ""));
             if (++ emptyNum == maxEmptyNum) {
                 log.error("连续" + maxEmptyNum + "次抓不到包, 程序退出");
+                sendToNotifyThread(new NotifyMsgBody(failNotifyType
+                        , new NotifyData("连续" + maxEmptyNum + "次抓不到包, 程序退出"
+                        , "连续" + maxEmptyNum + "次抓不到包, 程序退出")), D.MSG_TYPE_NOTIFY);
+                sendToNotifyThread(null, D.MSG_TYPE_SEND_SCREEN_SHOT);
+                try {
+                    Thread.sleep(20 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.exit(1);
             }
         } else {
@@ -175,7 +184,7 @@ public class ReportMsgMgr {
         }*/
 
         if (!notifyData.isEmpty()) {
-            sendToNotifyThread(new NotifyMsgBody(failNotifyType, notifyData));
+            sendToNotifyThread(new NotifyMsgBody(failNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
         }
         //oneDayMsgs.addAll(onceMsgs);
         onceMsgs.clear();
@@ -226,7 +235,7 @@ public class ReportMsgMgr {
         NotifyData notifyData = new NotifyData(String.format(Template.DAILY_HEADLINE, location, date),
                 String.format(Template.DAILY_MAIL, location, date, executeInterval, getOnedayErrorcodeInfo()));
 
-        sendToNotifyThread(new NotifyMsgBody(dailyNotifyType, notifyData));
+        sendToNotifyThread(new NotifyMsgBody(dailyNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
         //oneDayMsgs.clear();
         oneDayErrorcodeMap.clear();
         writeLock.unlock();

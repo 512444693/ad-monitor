@@ -65,7 +65,9 @@ public class NotifyThreadImpl extends BlockingThread {
                 if((body.getNotifyType() & NOTIFY_TYPE_SMS) == NOTIFY_TYPE_SMS) {
                     smsNotify.send(body.getNotifyData());
                 }
-
+                break;
+            case MSG_TYPE_SEND_SCREEN_SHOT :
+                ((WXNotify) wxNotify).sendScreenShot();
                 break;
             default:
                 super.threadProcessMsg(msg);
