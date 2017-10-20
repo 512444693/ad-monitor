@@ -54,12 +54,12 @@ public class NotifyThreadImpl extends BlockingThread {
             case MSG_TYPE_NOTIFY :
                 NotifyMsgBody body = (NotifyMsgBody) msg.msgBody;
 
-                if((body.getNotifyType() & NOTIFY_TYPE_WX) == NOTIFY_TYPE_WX) {
-                    wxNotify.send(body.getNotifyData());
-                }
-
                 if((body.getNotifyType() & NOTIFY_TYPE_MAIL) == NOTIFY_TYPE_MAIL) {
                     mailNotify.send(body.getNotifyData());
+                }
+
+                if((body.getNotifyType() & NOTIFY_TYPE_WX) == NOTIFY_TYPE_WX) {
+                    wxNotify.send(body.getNotifyData());
                 }
 
                 if((body.getNotifyType() & NOTIFY_TYPE_SMS) == NOTIFY_TYPE_SMS) {

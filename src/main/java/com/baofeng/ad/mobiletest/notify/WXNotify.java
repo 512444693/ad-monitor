@@ -84,11 +84,12 @@ public class WXNotify implements Notify {
                 } else if (errorInfo.getErrcode() == 42001) {
                     log.debug("access_token过期, 重新获取");
                     updateAccessToken();
+                } else {
+                    log.error("发送微信消息失败 : "
+                            + errorInfo.getErrcode() + ":" + errorInfo.getErrmsg());
                 }
             } else {
-                log.error("发送微信消息失败 : " +
-                        errorInfo.getErrcode() + ":" + errorInfo.getErrmsg());
-                return false;
+                log.error("发送微信没有收到回包");
             }
         }
         return false;
@@ -110,7 +111,6 @@ public class WXNotify implements Notify {
         if (this.send(imageInfo.toJson())) {
             log.info("发送微信图片成功");
         }
-
     }
 
     private String uploadImage() {
@@ -178,7 +178,10 @@ public class WXNotify implements Notify {
     }
 
     public void sendScreenShot() {
-        sendImage(uploadImage());
+        String mediaId = uploadImage();
+        if (!mediaId.equals("")) {
+            sendImage(mediaId);
+        }
     }
 }
 
