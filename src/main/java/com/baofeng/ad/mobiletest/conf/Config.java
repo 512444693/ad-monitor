@@ -60,6 +60,12 @@ public class Config {
     private String appActivity;
     private String url;
 
+    //虚拟机相关配置
+    private String STOP_PROCESS_COMMAND;
+    private String START_PROCESS_COMMAND;
+    private int stopSleepTime;
+    private int startSleepTime;
+
     public Config(String filePath) throws IOException {
         Wini ini = new Wini(new File(filePath));
 
@@ -123,6 +129,12 @@ public class Config {
         appPackage = ini.get("section_appium", "appPackage");
         appActivity = ini.get("section_appium", "appActivity");
         url = ini.get("section_appium", "url");
+
+        //VM相关配置
+        STOP_PROCESS_COMMAND = ini.get("vm", "STOP_PROCESS_COMMAND");
+        START_PROCESS_COMMAND = ini.get("vm", "START_PROCESS_COMMAND");
+        stopSleepTime = ini.get("vm", "stopSleepTime", int.class);
+        startSleepTime = ini.get("vm", "startSleepTime", int.class);
     }
 
     public int getTryTimes() {
@@ -279,5 +291,21 @@ public class Config {
 
     public int getMaxEmptyNum() {
         return maxEmptyNum;
+    }
+
+    public String getSTOP_PROCESS_COMMAND() {
+        return STOP_PROCESS_COMMAND;
+    }
+
+    public String getSTART_PROCESS_COMMAND() {
+        return START_PROCESS_COMMAND;
+    }
+
+    public int getStopSleepTime() {
+        return stopSleepTime;
+    }
+
+    public int getStartSleepTime() {
+        return startSleepTime;
     }
 }

@@ -3,6 +3,7 @@ package com.baofeng.ad.mobiletest.thread;
 import com.baofeng.ad.mobiletest.appium.StorminAppium;
 import com.baofeng.ad.mobiletest.conf.Config;
 import com.baofeng.ad.mobiletest.server.MyServer;
+import com.baofeng.ad.mobiletest.utils.VmUtils;
 import com.zm.frame.thread.msg.ThreadMsg;
 import com.zm.frame.thread.thread.BlockingThread;
 
@@ -54,6 +55,9 @@ public class AppiumThreadImpl extends BlockingThread {
                 sendThreadMsgTo(MSG_TYPE_CAPTURE_STOP, null, THREAD_TYPE_PROCESS);
                 //给一点时间等待抓包结束
                 sleep(5);
+                break;
+            case MSG_TYPE_RESTART_VM :
+                VmUtils.restartProcess();
                 break;
             default:
                 super.threadProcessMsg(msg);
