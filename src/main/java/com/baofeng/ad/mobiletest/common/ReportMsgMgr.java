@@ -32,6 +32,7 @@ public class ReportMsgMgr {
 
     private ThreadServer server = ThreadServer.getInstance();
     private ConsultMsgMgr consultMsgMgr = ConsultMsgMgr.getInstance();
+    private ResponseMsgMgr responseMsgMgr = ResponseMsgMgr.getInstance();
 
     private int failNotifyType;
     private int dailyNotifyType;
@@ -97,9 +98,10 @@ public class ReportMsgMgr {
                         !error) {
                     notifyData.addTitle(String.format(Template.HEADLINE_A, msg.getLocation(),
                             msg.getErrorcode(), msg.getId(), msg.getStatus()));
+                    ConsultBean consultBean = consultMsgMgr.getMsg(msg.getLocation() + msg.getXst());
                     notifyData.addContent(String.format(Template.MAIL_A, msg.getRawData(),
-                            msg.getItime(), msg.getStatus(),
-                            consultMsgMgr.getMsg(msg.getLocation() + msg.getXst())));
+                            msg.getItime(), msg.getStatus(), consultBean.getRawData(),
+                            responseMsgMgr.getLaterResp(consultBean.getTime())));
                     error = true;// 有一个失败即认为失败
                 }
                 if (errorCodeMap.containsKey(msg.getErrorcode())) {
@@ -151,9 +153,10 @@ public class ReportMsgMgr {
                     }
 
                     notifyData.addTitle(String.format(Template.HEADLINE_B, location, reason));
+                    ConsultBean consultBean = consultMsgMgr.getMsg(msgList.get(0).getLocation() + msgList.get(0).getXst());
                     notifyData.addContent(String.format(
                             Template.MAIL_B, location, reason + "\r\n" + sb.toString(),
-                            consultMsgMgr.getMsg(msgList.get(0).getLocation() + msgList.get(0).getXst())));
+                            consultBean.getRawData(), responseMsgMgr.getLaterResp(consultBean.getTime())));
                     break; // 只打出一个异常
                 }
             }
@@ -173,7 +176,7 @@ public class ReportMsgMgr {
                 restarted = true;
             } else {
                 notifyData.addTitle(String.format(Template.HEADLINE_B, location, "未抓到android盒子报数"));
-                notifyData.addContent(String.format(Template.MAIL_B, location, "一次case中没有满足过滤条件的报数", ""));
+                notifyData.addContent(String.format(Template.MAIL_B, location, "一次case中没有满足过滤条件的报数", "", ""));
             }
         } else {
             emptyNum = 0;
@@ -191,6 +194,7 @@ public class ReportMsgMgr {
         //oneDayMsgs.addAll(onceMsgs);
         onceMsgs.clear();
         consultMsgMgr.clear();
+        responseMsgMgr.clear();
         writeLock.unlock();
     }
 
