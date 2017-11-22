@@ -26,6 +26,7 @@ public class Config {
     //每种报告用哪几种通知方式
     private int failNotify;
     private int dailyNotify;
+    private boolean emptyNotify;
 
     //微信配置项
     private int tryTimes;
@@ -88,6 +89,7 @@ public class Config {
         //每种报告用哪几种通知方式
         failNotify = ini.get("notify", "failNotify", int.class);
         dailyNotify = ini.get("notify", "dailyNotify", int.class);
+        emptyNotify = ini.get("notify", "emptyNotify", boolean.class);
 
 
         //邮件配置项
@@ -307,5 +309,9 @@ public class Config {
 
     public int getStartSleepTime() {
         return startSleepTime;
+    }
+
+    public boolean isEmptyNotify() {
+        return emptyNotify;
     }
 }

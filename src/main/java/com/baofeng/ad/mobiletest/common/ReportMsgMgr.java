@@ -76,7 +76,7 @@ public class ReportMsgMgr {
     }
 
     //临时发送线程消息, 不可回复
-    private void sendToNotifyThread(int threadType, NotifyMsgBody msgBody, int msgType) {
+    private void notifyThread(int threadType, NotifyMsgBody msgBody, int msgType) {
         ThreadMsg msg = new ThreadMsg(-1, -1, -1,
                 threadType, -1, -1, msgType, msgBody);
         server.sendThreadMsgTo(msg);
@@ -169,14 +169,18 @@ public class ReportMsgMgr {
                     exit();
                 }
                 log.error("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
-                notifyData.addTitle("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
-                notifyData.addContent("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
-                sendToNotifyThread(D.THREAD_TYPE_APPIUM, null, D.MSG_TYPE_RESTART_VM);
+                if (MyServer.getInstance().getConfig().isEmptyNotify()) {
+                    notifyData.addTitle("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
+                    notifyData.addContent("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
+                }
+                notifyThread(D.THREAD_TYPE_APPIUM, null, D.MSG_TYPE_RESTART_VM);
                 emptyNum = 0;
                 restarted = true;
             } else {
-                notifyData.addTitle(String.format(Template.HEADLINE_B, location, "未抓到android盒子报数"));
-                notifyData.addContent(String.format(Template.MAIL_B, location, "一次case中没有满足过滤条件的报数", "", ""));
+                if (MyServer.getInstance().getConfig().isEmptyNotify()) {
+                    notifyData.addTitle(String.format(Template.HEADLINE_B, location, "未抓到android盒子报数"));
+                    notifyData.addContent(String.format(Template.MAIL_B, location, "一次case中没有满足过滤条件的报数", "", ""));
+                }
             }
         } else {
             emptyNum = 0;
@@ -189,7 +193,7 @@ public class ReportMsgMgr {
         }*/
 
         if (!notifyData.isEmpty()) {
-            sendToNotifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(failNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
+            notifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(failNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
         }
         //oneDayMsgs.addAll(onceMsgs);
         onceMsgs.clear();
@@ -199,10 +203,10 @@ public class ReportMsgMgr {
     }
 
     private void exit() {
-        sendToNotifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(failNotifyType
+        notifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(failNotifyType
                 , new NotifyData("重启虚拟机后依然多次无法抓到包, 程序退出"
                 , "重启虚拟机后依然多次无法抓到包, 程序退出")), D.MSG_TYPE_NOTIFY);
-        sendToNotifyThread(D.THREAD_TYPE_NOTIFY, null, D.MSG_TYPE_SEND_SCREEN_SHOT);
+        notifyThread(D.THREAD_TYPE_NOTIFY, null, D.MSG_TYPE_SEND_SCREEN_SHOT);
         try {
             Thread.sleep(20 * 1000);
         } catch (InterruptedException e) {
@@ -254,7 +258,7 @@ public class ReportMsgMgr {
         NotifyData notifyData = new NotifyData(String.format(Template.DAILY_HEADLINE, location, date),
                 String.format(Template.DAILY_MAIL, location, date, executeInterval, getOnedayErrorcodeInfo()));
 
-        sendToNotifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(dailyNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
+        notifyThread(D.THREAD_TYPE_NOTIFY, new NotifyMsgBody(dailyNotifyType, notifyData), D.MSG_TYPE_NOTIFY);
         //oneDayMsgs.clear();
         oneDayErrorcodeMap.clear();
         writeLock.unlock();
