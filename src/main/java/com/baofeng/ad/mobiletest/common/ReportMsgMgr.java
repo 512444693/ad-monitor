@@ -102,12 +102,14 @@ public class ReportMsgMgr {
                             consultMsgMgr.getMsg(msg.getLocation() + msg.getXst())));
                     error = true;// 有一个失败即认为失败
                 }
-                if (errorCodeMap.containsKey(msg.getErrorcode())) {
-                    errorCodeMap.get(msg.getErrorcode()).add(msg);
-                } else {
-                    List<ReportMsg> list = new ArrayList<>();
-                    list.add(msg);
-                    errorCodeMap.put(msg.getErrorcode(), list);
+                if (!msg.getErrorcode().trim().equals("3") || !msg.getLocation().trim().equals("wx_tjbanner2")) {
+                    if (errorCodeMap.containsKey(msg.getErrorcode())) {
+                        errorCodeMap.get(msg.getErrorcode()).add(msg);
+                    } else {
+                        List<ReportMsg> list = new ArrayList<>();
+                        list.add(msg);
+                        errorCodeMap.put(msg.getErrorcode(), list);
+                    }
                 }
                 addToOneDayErrorcodeMap(msg.getStatus(), msg.getErrorcode(), 1);
             }
