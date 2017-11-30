@@ -138,7 +138,7 @@ public class Capture {
         }
 
         private boolean isResponseMsg(String data, ResponseBean bean) {
-            Pattern pattern = Pattern.compile("(HTTP/1.[0-1] \\d{3} [\\S\\s]+)\n");
+            Pattern pattern = Pattern.compile("(HTTP/1.[0-1] \\d{3} [\\S\\s]+)\r\n\r\n");
             Matcher matcher = pattern.matcher(data);
             if (matcher.find()) {
                 bean.setTime(System.currentTimeMillis());
