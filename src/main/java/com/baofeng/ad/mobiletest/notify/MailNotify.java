@@ -52,21 +52,26 @@ public class MailNotify implements Notify {
 
     @Override
     public void send(NotifyData notifyData) {
-        try {
-            transport.connect(config.getSmtp(),config.getUser(),config.getPwd());
-            message.setSubject(notifyData.getTitle());
-            String content = notifyData.getContent();
-            message.setContent(content,"text/plain;charset=GBK");
-            message.saveChanges();
-            transport.sendMessage(message,message.getAllRecipients());
-            transport.close();
-        } catch (MessagingException e) {
-           log.error("发送邮件失败 : " + e);
-           return;
+        int tryTimes = 3;
+        while((-- tryTimes) >= 0) {
+            try {
+                transport.connect(config.getSmtp(),config.getUser(),config.getPwd());
+                message.setSubject(notifyData.getTitle());
+                String content = notifyData.getContent();
+                message.setContent(content,"text/plain;charset=GBK");
+                message.saveChanges();
+                transport.sendMessage(message,message.getAllRecipients());
+                transport.close();
+            } catch (MessagingException e) {
+                log.error("发送邮件失败 : " + e);
+                continue;
+            }
+            log.info("发送邮件成功 : \r\n" +
+                    notifyData.getTitle() + "\r\n" +
+                    notifyData.getContent());
+            return;
         }
-        log.info("发送邮件成功 : \r\n" +
-                notifyData.getTitle() + "\r\n" +
-                notifyData.getContent());
+        log.error("发送邮件尝试多次均失败");
     }
 }
 

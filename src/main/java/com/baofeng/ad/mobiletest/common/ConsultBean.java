@@ -5,6 +5,7 @@ public class ConsultBean {
     private String id;
     private String xst;
     private String rawData;
+    private long time;
 
     public ConsultBean() {}
 
@@ -31,5 +32,13 @@ public class ConsultBean {
 
     public void setRawData(String rawData) {
         this.rawData = rawData;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }

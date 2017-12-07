@@ -1,8 +1,6 @@
 package com.baofeng.ad.mobiletest.capture;
 
-import com.baofeng.ad.mobiletest.common.ConsultBean;
-import com.baofeng.ad.mobiletest.common.ConsultMsgMgr;
-import com.baofeng.ad.mobiletest.common.ReportMsgMgr;
+import com.baofeng.ad.mobiletest.common.*;
 import net.sourceforge.jpcap.capture.*;
 import net.sourceforge.jpcap.net.Packet;
 import net.sourceforge.jpcap.net.TCPPacket;
@@ -120,6 +118,34 @@ public class Capture {
                         ConsultMsgMgr.getInstance().putMsg(consultBean);
                     }
                 }
+
+                if (tcpPacket.getSourcePort() == 80) {
+                    try {
+                        rawData = URLDecoder.decode(new String(tcpPacket.getTCPData()), "utf-8");
+                        /*if (!rawData.trim().equals("")) {
+                            log.info("抓到包 :\r\n" + rawData);
+                        }*/
+                    } catch (Exception e) {
+                        log.debug("url decode error : " + e.getMessage());
+                        return;
+                    }
+                    ResponseBean responseBean = new ResponseBean();
+                    if (isResponseMsg(rawData, responseBean)) {
+                        ResponseMsgMgr.getInstance().pushMsg(responseBean);
+                    }
+                }
+            }
+        }
+
+        private boolean isResponseMsg(String data, ResponseBean bean) {
+            Pattern pattern = Pattern.compile("(HTTP/1.[0-1] \\d{3} [\\S\\s]+)\r\n\r\n");
+            Matcher matcher = pattern.matcher(data);
+            if (matcher.find()) {
+                bean.setTime(System.currentTimeMillis());
+                bean.setRawData(matcher.group(1));
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -139,6 +165,7 @@ public class Capture {
                 consultBean.setRawData(matcher.group(0));
                 consultBean.setId(matcher.group(1));
                 consultBean.setXst(matcher.group(2));
+                consultBean.setTime(System.currentTimeMillis());
             } else {
                 return false;
             }
