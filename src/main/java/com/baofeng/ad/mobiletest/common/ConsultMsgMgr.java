@@ -29,7 +29,7 @@ public class ConsultMsgMgr {
             return map.get(key);
         } else {
             log.info("找不到 key 为" + key + "的协商");
-            return null;
+            return new ConsultBean("", "", "", Long.MAX_VALUE);
         }
     }
 

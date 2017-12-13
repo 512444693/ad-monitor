@@ -9,6 +9,12 @@ public class ConsultBean {
 
     public ConsultBean() {}
 
+    public ConsultBean(String id, String xst, String rawData, long time) {
+        this.id = id;
+        this.xst = xst;
+        this.rawData = rawData;
+        this.time = time;
+    }
 
     public String getId() {
         return id;
