@@ -168,6 +168,7 @@ public class ReportMsgMgr {
         if (onceMsgs.size() == 0) {
             if (++ emptyNum >= maxEmptyNum) {
                 if (restarted) {
+                    log.info("重启虚拟机后，依然" + maxEmptyNum + "次抓不到包，程序退出！！！");
                     exit();
                 }
                 log.error("连续" + maxEmptyNum + "次抓不到包, 尝试重启虚拟机");
@@ -214,6 +215,7 @@ public class ReportMsgMgr {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        log.info("程序退出!!!");
         System.exit(1);
     }
 
